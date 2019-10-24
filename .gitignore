@@ -1,12 +1,19 @@
-# Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
 *.so
-*.dylib
+*.exe
+whoapi
+.idea
 
-# Test binary, build with `go test -c`
-*.test
 
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
+# Mac OS X
+*.DS_Store
+app/utils/log/t.log
+housekeepingapi
+housekeepingapi.tar.gz
+
+# Folders
+_obj
+_test
+.cover
