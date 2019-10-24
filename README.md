@@ -1,4 +1,4 @@
-<div align=center><img width="150" height="150" src="https://github.com/ah-panda/panda/blob/master/images/panda.png"/></div>
+<div align=center><img width="150" height="150" src="https://github.com/ah-panda/panda/blob/master/images/panda.jpg"/></div>
 
 
 Focus on API management.
