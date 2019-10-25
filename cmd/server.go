@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -11,6 +10,8 @@ import (
 	"time"
 
 	"github.com/ah-panda/panda/pkg/api/routers"
+	"github.com/ah-panda/panda/pkg/logging"
+	"github.com/ah-panda/panda/pkg/models"
 	"github.com/spf13/cobra"
 )
 
@@ -20,24 +21,30 @@ var serverCmd = &cobra.Command{
 	RunE:  server,
 }
 
-var (
-	port int
-)
-
 func init() {
-	serverCmd.Flags().IntVar(&port, "port", 9527, "http server listen addr")
+	registerFlagsHttpSever(serverCmd)
+	registerFlagsDb(serverCmd)
 }
 
 func server(cmd *cobra.Command, args []string) error {
+	var err error
+
+	printConfg()
+
+	err = models.InitDb("mysql", dbCfg.DataSource())
+	if err != nil {
+		logging.Fatal("init db err:", err)
+	}
+
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", port),
+		Addr:    fmt.Sprintf(":%d", httpServerCfg.Port),
 		Handler: routers.NewGin(),
 	}
 
 	go func() {
 		// service connections
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+			logging.Fatal("start server err:", err)
 		}
 	}()
 
@@ -49,19 +56,19 @@ func server(cmd *cobra.Command, args []string) error {
 	// kill -9 is syscall.SIGKILL but can't be catch, so don't need add it
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	log.Println("Shutdown Server ...")
+	logging.Infof("Shutdown Server ...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server Shutdown:", err)
+		logging.Fatal("Server Shutdown:", err)
 	}
 	// catching ctx.Done(). timeout of 5 seconds.
 	select {
 	case <-ctx.Done():
-		log.Println("timeout of 5 seconds.")
+		logging.Infof("timeout of 5 seconds.")
 	}
-	log.Println("Server exiting")
+	logging.Infof("Server exiting")
 
 	return nil
 }
