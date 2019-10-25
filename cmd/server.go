@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/ah-panda/panda/pkg/api/routers"
 	"github.com/spf13/cobra"
 )
 
@@ -30,7 +31,7 @@ func init() {
 func server(cmd *cobra.Command, args []string) error {
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
-		Handler: nil,
+		Handler: routers.NewGin(),
 	}
 
 	go func() {
