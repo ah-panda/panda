@@ -3,6 +3,7 @@ module github.com/ah-panda/panda
 go 1.13
 
 require (
+	github.com/elazarl/go-bindata-assetfs v1.0.0
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/sirupsen/logrus v1.2.0

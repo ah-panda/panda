@@ -1,0 +1,23 @@
+<h3>添加分组白名单</h3>
+
+<form name="addGroupWlForm" class="form-horizontal" role="form" ng-submit="addGroupWlSubmit()">
+  <div class="form-group">
+    <label for="newGroupWl" class="col-md-4 control-label">选择分组</label>
+    <div class="col-md-6">
+      <select name="group" class="form-control" id="group" ng-model="newGroupWl.group_id" ng-options="a.group_id as a.group_description for a in myGroups|filter:isSupperOrAdminAndGroupnameNotNull" required>
+          <option value="">请选择分组</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="developer_id" class="col-md-4 control-label">开发者账号</label>
+    <div class="col-md-6">
+      <input name="developer_id" type="text" class="form-control" id="developer_id" ng-model="newGroupWl.developer_id" required>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-md-offset-4 col-md-6">
+      <button type="submit" class="btn btn-primary">添加</button>
+    </div>
+  </div>
+</form>

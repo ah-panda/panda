@@ -1,0 +1,17 @@
+<div class="form-group">
+  <label for="apimanagerURL" class="control-label">目标环境</label>
+  <div>
+    <select class="form-control" id="apimanagerCommonURL" name="apimanagerCommonURL" ng-model="apimanagerCommonURL" ng-change="urlSelectChange(apimanagerCommonURL)" ng-options="a.id as a.name for a in apimanagerURLMap" ng-disabled="false">
+    </select>
+  </div>
+</div>
+<div class="form-group">
+  <button type="button" class="btn btn-danger btn-sm" ng-click="sync(groupId)">开始</button>
+</div>
+
+{{message}}
+<ol>
+  <li ng-repeat="url in release_outer_urls">
+    {{url}}
+  </li>
+</ol>

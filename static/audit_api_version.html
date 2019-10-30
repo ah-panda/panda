@@ -1,0 +1,533 @@
+
+<form name="auditApiForm" class="form-horizontal" role="form" ng-submit="submit()">
+  <div class="row">
+    <div class="col-md-offset-2 col-md-10">
+      <button type="button" class="btn btn-primary" ng-click="accept()" ng-disabled="apiVersion.is_audit==2">批准</button>
+      <button type="button" class="btn btn-primary" ng-click="refuse()" >不批准</button>
+      <button type="button" class="btn btn-default" ng-click="back()">返回</button>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="auditComment" class="col-md-2 control-label">审核意见(Markdown)</label>
+    <div class="col-md-8">
+      <textarea name="auditComment" class="form-control" rows="6" id="auditComment" ng-model="appendix_audit_comment" ng-maxlength="4096" placeholder="如审核不通过，请填写审核意见。" required></textarea>
+    </div>
+  </div>
+  <hr/>
+  <div class="row">
+    <div class="col-md-2"><p class="text-right">接口名称</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        {{apiName}}
+      </p>
+    </div>
+  </div>
+ <div class="row">
+    <div class="col-md-2"><p class="text-right">版本</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        v{{apiVersion.version}}
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2"><p class="text-right">创建时间</p></div>
+    <div class="col-md-10">
+      <p class="text-left">{{apiVersion.create_time==0?"-":apiVersion.create_time | date:'yyyy-MM-dd HH:mm:ss'}}</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2"><p class="text-right">更新时间</p></div>
+    <div class="col-md-10">
+      <p class="text-left">{{apiVersion.update_time==0?"-":apiVersion.update_time | date:'yyyy-MM-dd HH:mm:ss'}}</p>
+    </div>
+  </div>
+  <!--div class="row">
+    <div class="col-md-2"><p class="text-right">审核</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        {{isAuditArray[apiVersion.is_audit]}}
+      </p>
+    </div>
+  </div-->
+  <div class="form-group">
+    <label for="auditStatus" class="col-md-2 control-label">审核</label>
+    <div class="col-md-6">
+      <select class="form-control" id="auditStatus" ng-model="apiVersion.is_audit" ng-options="a.id as a.name for a in isAuditMap" ng-disabled="true" required>
+      </select>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2"><p class="text-right">状态</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        {{statusArray[apiVersion.status]}}
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2"><p class="text-right">负责人</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        <span class="label label-default">{{apiVersion.creator}}</span>
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2"><p class="text-right">修改者</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        {{apiVersion.modifier}}
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2"><p class="text-right">Gateway URI</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        {{apiVersion.outer_url}}
+      </p>
+    </div>
+  </div>
+<div class="row" ng-show={{config.switch_product}}>
+    <div class="col-md-2"><p class="text-right">Gateway 生产环境URL</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        https://<strong>api.mumway.com</strong>/{{apiVersion.outer_url}}
+        <a href="#/request_log/{{apiVersion.id}}">请求统计</a>
+        <a href="#/error_log/{{apiVersion.id}}">错误统计</a>
+      </p>
+    </div>
+  </div>
+  <div class="row" ng-show={{config.switch_pre}}>
+    <div class="col-md-2"><p class="text-right">Gateway 预发布环境URL</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        https://<strong>api.pre.mumway.com</strong>/{{apiVersion.outer_url}}
+        <label type="text" class="label label-default">正在规划中,暂时不可用</label>
+      </p>
+    </div>
+  </div>
+  <div class="row" ng-show={{config.switch_test}}>
+    <div class="col-md-2"><p class="text-right">Gateway 集成测试环境URL</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        http://<strong>api.sit.mumway.com</strong>/{{apiVersion.outer_url}}
+        <a href="#/request_log/{{apiVersion.id}}">请求统计</a>
+        <a href="#/error_log/{{apiVersion.id}}">错误统计</a>
+      </p>
+    </div>
+  </div>
+  <div class="row" ng-show={{config.switch_sandbox}}>
+    <div class="col-md-2"><p class="text-right">Gateway 开发联调(Sandbox) URL</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        http://<strong>api.dev.mumway.com</strong>/{{apiVersion.outer_url}}
+        <a href="#/request_log/{{apiVersion.id}}">请求统计</a>
+        <a href="#/error_log/{{apiVersion.id}}">错误统计</a>
+      </p>
+    </div>
+  </div>
+  <div class="row" ng-show={{config.switch_product}}>
+    <div class="col-md-2"><p class="text-right">API 生产环境URL</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        {{apiVersion.product_url}}
+        <label type="text" class="label label-default">{{detectPingProduct}}</label>
+      </p>
+      <span class="help-block" ng-show="detectPingProductHelp">{{detectPingProductHelp}}</span>
+    </div>
+  </div>
+
+  <div class="row" ng-show={{config.switch_pre}}>
+    <div class="col-md-2"><p class="text-right">API 预发布环境URL</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        {{apiVersion.pre_url}}
+        <label type="text" class="label label-default">{{detectPingPre}}</label>
+      </p>
+      <span class="help-block" ng-show="detectPingPreHelp">{{detectPingPreHelp}}</span>
+    </div>
+  </div>
+  <div class="row" ng-show={{config.switch_test}}>
+    <div class="col-md-2"><p class="text-right">API 集成测试环境URL</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        {{apiVersion.test_url}}
+        <label type="text" class="label label-default">{{detectPingTest}}</label>
+      </p>
+      <span class="help-block" ng-show="detectPingTestHelp">{{detectPingTestHelp}}</span>
+    </div>
+  </div>
+
+  <div class="row" ng-show={{config.switch_sandbox}}>
+    <div class="col-md-2"><p class="text-right">API 开发联调(Sandbox) URL</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        {{apiVersion.sandbox_url}}
+        <label type="text" class="label label-default">{{detectPingSandbox}}</label>
+      </p>
+      <span class="help-block" ng-show="detectPingSandboxHelp">{{detectPingSandboxHelp}}</span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2"><p class="text-right">授权方式</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        {{accessArray[apiVersion.access]}}
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2" for="token"><p class="text-right">API签名</p></div>
+    <div class="col-md-6">
+      <p class="text-left" id="token">{{apiVersion.token}}</p>
+    </div>
+  </div>
+  <div class="row">
+    <div for="depend" class="col-md-2 control-label"><p class="text-right">API前置条件</p></div>
+    <div class="col-md-6">
+      <p class="text-left" id="depend">{{apiVersion.depend}}</p>
+    </div>
+  </div>
+  <div class="row" ng-show="false">
+    <div class="col-md-2"><p class="text-right">每分钟请求上限</p></div>
+    <div class="col-md-6">
+      <pre class="text-left">
+        {{apiVersion.max_per_minute}}
+      </pre>
+    </div>
+  </div>
+  <div class="row" ng-show="false">
+    <div class="col-md-2"><p class="text-right">TCP连接超时(毫秒)</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        {{apiVersion.connect_timeout}}
+      </p>
+    </div>
+  </div>
+  <div class="row" ng-show="false">
+    <div class="col-md-2"><p class="text-right">HTTP请求超时(毫秒)</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        {{apiVersion.request_timeout}}
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2"><p class="text-right">详细日志级别</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        {{detail_log_Array[apiVersion.detail_log]}}
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2"><p class="text-right">API Cookies</p></div>
+    <div class="col-md-6">
+      <pre class="text-left" ng-show="apiVersion.cookies !=''">{{apiVersion.cookies}}</pre>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> 描述</h3>
+    </div>
+    <div class="panel-body">
+      <div btf-markdown="apiVersion.description"></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2"><p class="text-right">HTTP Method</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        <span class="label label-default" ng-show="apiVersion.is_get">GET</span>
+        <span class="label label-default" ng-show="apiVersion.is_post">POST</span>
+        <span class="label label-default" ng-show="apiVersion.is_put">PUT</span>
+        <span class="label label-default" ng-show="apiVersion.is_delete">DELET</span>
+        <span class="label label-default" ng-show="apiVersion.is_patch">PATCH</span>
+      </p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_get">
+    <div class="col-md-2"><p class="text-right"><strong>GET方法</strong></p></div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_get">
+    <div class="col-md-2"><p class="text-right">Cache过期时间(秒)</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        {{apiVersion.get_cache_expires}}
+      </p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_get">
+    <div class="col-md-2 text-right"><p>是否签名</p></div>
+    <div class="col-md-10 text-left">
+      <p class="text-left">{{apiVersion.get_is_token | tokenToChineseCharacter}}</p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_get">
+    <div class="col-md-2"><p class="text-right">网络访问权限</p></div>
+    <div class="col-md-10">
+      <p class="text-left">{{apiVersion.get_is_private | digitToChineseCharacter}}</p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_get">
+    <div class="col-md-2"><p class="text-right">认证方式</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        <span class="label label-default" ng-show="apiVersion.get_is_public">公用</span>
+        <span class="label label-default" ng-show="apiVersion.get_is_check_app">Key/Secret</span>
+        <span class="label label-default" ng-show="apiVersion.get_is_check_session">Session</span>
+        <a href="http://wiki.mumway.cn/display/WIKI/API+Manager" target="_blank">
+          <span class="glyphicon glyphicon-question-sign"></span>
+        </a>
+      </p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_get">
+    <div class="col-md-2" ng-show="apiVersion.get_is_check_session"><p class="text-right">Session与参数关系</p></div>
+    <div class="col-md-10" ng-show="apiVersion.get_is_check_session">
+      <p class="text-left">
+        {{apiVersion.get_session_param_map}}
+      </p>
+    </div>
+  </div>
+  <div class="panel panel-default" ng-show="apiVersion.is_get">
+    <div class="panel-heading">
+      <h3 class="panel-title"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> GET请求参数说明</h3>
+    </div>
+    <div class="panel-body">
+      <div btf-markdown="apiVersion.get_input_doc"></div>
+    </div>
+  </div>
+  <div class="panel panel-default" ng-show="apiVersion.is_get">
+    <div class="panel-heading">
+      <h3 class="panel-title"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> GET响应内容说明</h3>
+    </div>
+    <div class="panel-body">
+      <div btf-markdown="apiVersion.get_output_doc"></div>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_get">
+    <div class="col-md-2"><p class="text-right">压测URL</p></div>
+    <div class="col-md-8">
+      <pre class="text-left">{{apiVersion.get_test_input_doc}}</pre>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_post">
+    <div class="col-md-2"><p class="text-right"><strong>POST方法</strong></p></div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_post">
+    <div class="col-md-2 text-right"><p>是否签名</p></div>
+    <div class="col-md-10 text-left">
+      <p class="text-left">{{apiVersion.post_is_token | tokenToChineseCharacter}}</p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_post">
+    <div class="col-md-2"><p class="text-right">网络访问权限</p></div>
+    <div class="col-md-10">
+      <p class="text-left">{{apiVersion.post_is_private | digitToChineseCharacter}}</p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_post">
+    <div class="col-md-2"><p class="text-right">认证方式</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        <span class="label label-default" ng-show="apiVersion.post_is_public">公用</span>
+        <span class="label label-default" ng-show="apiVersion.post_is_check_app">Key/Secret</span>
+        <span class="label label-default" ng-show="apiVersion.post_is_check_session">Session</span>
+        <a href="http://wiki.mumway.cn/display/WIKI/API+Manager" target="_blank">
+          <span class="glyphicon glyphicon-question-sign">
+        </span></a>
+      </p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_post">
+    <div class="col-md-2" ng-show="apiVersion.post_is_check_session"><p class="text-right">Session与参数关系</p></div>
+    <div class="col-md-10" ng-show="apiVersion.post_is_check_session">
+      <p class="text-left">
+        {{apiVersion.post_session_param_map}}
+      </p>
+    </div>
+  </div>
+  <div class="panel panel-default" ng-show="apiVersion.is_post">
+    <div class="panel-heading">
+      <h3 class="panel-title"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> POST请求参数说明</h3>
+    </div>
+    <div class="panel-body">
+      <div btf-markdown="apiVersion.post_input_doc"></div>
+    </div>
+  </div>
+  <div class="panel panel-default" ng-show="apiVersion.is_post">
+    <div class="panel-heading">
+      <h3 class="panel-title"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> POST响应内容说明</h3>
+    </div>
+    <div class="panel-body">
+      <div btf-markdown="apiVersion.post_output_doc"></div>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_put">
+    <div class="col-md-2"><p class="text-right"><strong>PUT方法</strong></p></div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_put">
+    <div class="col-md-2 text-right"><p>是否签名</p></div>
+    <div class="col-md-10 text-left">
+      <p class="text-left">{{apiVersion.put_is_token | tokenToChineseCharacter}}</p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_put">
+    <div class="col-md-2"><p class="text-right">网络访问权限</p></div>
+    <div class="col-md-10">
+      <p class="text-left">{{apiVersion.put_is_private | digitToChineseCharacter}}</p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_put">
+    <div class="col-md-2"><p class="text-right">认证方式</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        <span class="label label-default" ng-show="apiVersion.put_is_public">公用</span>
+        <span class="label label-default" ng-show="apiVersion.put_is_check_app">Key/Secret</span>
+        <span class="label label-default" ng-show="apiVersion.put_is_check_session">Session</span>
+        <a href="http://wiki.mumway.cn/display/WIKI/API+Manager" target="_blank">
+          <span class="glyphicon glyphicon-question-sign">
+        </span></a>
+      </p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_put">
+    <div class="col-md-2" ng-show="apiVersion.put_is_check_session"><p class="text-right">Session与参数关系</p></div>
+    <div class="col-md-10" ng-show="apiVersion.put_is_check_session">
+      <p class="text-left">
+        {{apiVersion.put_session_param_map}}
+      </p>
+    </div>
+  </div>
+  <div class="panel panel-default" ng-show="apiVersion.is_put">
+    <div class="panel-heading">
+      <h3 class="panel-title"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> PUT请求参数说明</h3>
+    </div>
+    <div class="panel-body">
+      <div btf-markdown="apiVersion.put_input_doc"></div>
+    </div>
+  </div>
+  <div class="panel panel-default" ng-show="apiVersion.is_put">
+    <div class="panel-heading">
+      <h3 class="panel-title"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> PUT响应内容说明</h3>
+    </div>
+    <div class="panel-body">
+      <div btf-markdown="apiVersion.put_output_doc"></div>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_delete">
+    <div class="col-md-2"><p class="text-right"><strong>DELETE方法</strong></p></div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_delete">
+    <div class="col-md-2 text-right"><p>是否签名</p></div>
+    <div class="col-md-10 text-left">
+      <p class="text-left">{{apiVersion.delete_is_token | tokenToChineseCharacter}}</p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_delete">
+    <div class="col-md-2"><p class="text-right">网络访问权限</p></div>
+    <div class="col-md-10">
+      <p class="text-left">{{apiVersion.delete_is_private | digitToChineseCharacter}}</p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_delete">
+    <div class="col-md-2"><p class="text-right">认证方式</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        <span class="label label-default" ng-show="apiVersion.delete_is_public">公用</span>
+        <span class="label label-default" ng-show="apiVersion.delete_is_check_app">Key/Secret</span>
+        <span class="label label-default" ng-show="apiVersion.delete_is_check_session">Session</span>
+        <a href="http://wiki.mumway.cn/display/WIKI/API+Manager" target="_blank">
+          <span class="glyphicon glyphicon-question-sign">
+        </span></a>
+      </p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_delete">
+    <div class="col-md-2" ng-show="apiVersion.delete_is_check_session"><p class="text-right">Session与参数关系</p></div>
+    <div class="col-md-10" ng-show="apiVersion.delete_is_check_session">
+      <p class="text-left">
+        {{apiVersion.delete_session_param_map}}
+      </p>
+    </div>
+  </div>
+  <div class="panel panel-default" ng-show="apiVersion.is_delete">
+    <div class="panel-heading">
+      <h3 class="panel-title"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> DELETE请求参数说明</h3>
+    </div>
+    <div class="panel-body">
+      <div btf-markdown="apiVersion.delete_input_doc"></div>
+    </div>
+  </div>
+  <div class="panel panel-default" ng-show="apiVersion.is_delete">
+    <div class="panel-heading">
+      <h3 class="panel-title"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> DELETE响应内容说明</h3>
+    </div>
+    <div class="panel-body">
+      <div btf-markdown="apiVersion.delete_output_doc"></div>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_patch">
+    <div class="col-md-2"><p class="text-right"><strong>PATCH方法</strong></p></div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_patch">
+    <div class="col-md-2 text-right"><p>是否签名</p></div>
+    <div class="col-md-10 text-left">
+      <p class="text-left">{{apiVersion.patch_is_token | tokenToChineseCharacter}}</p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_patch">
+    <div class="col-md-2"><p class="text-right">网络访问权限</p></div>
+    <div class="col-md-10">
+      <p class="text-left">{{apiVersion.patch_is_private | digitToChineseCharacter}}</p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_patch">
+    <div class="col-md-2"><p class="text-right">认证方式</p></div>
+    <div class="col-md-10">
+      <p class="text-left">
+        <span class="label label-default" ng-show="apiVersion.patch_is_public">公用</span>
+        <span class="label label-default" ng-show="apiVersion.patch_is_check_app">Key/Secret</span>
+        <span class="label label-default" ng-show="apiVersion.patch_is_check_session">Session</span>
+        <a href="http://wiki.mumway.cn/display/WIKI/API+Manager" target="_blank">
+          <span class="glyphicon glyphicon-question-sign">
+        </span></a>
+      </p>
+    </div>
+  </div>
+  <div class="row" ng-show="apiVersion.is_patch">
+    <div class="col-md-2" ng-show="apiVersion.patch_is_check_session"><p class="text-right">Session与参数关系</p></div>
+    <div class="col-md-10" ng-show="apiVersion.patch_is_check_session">
+      <p class="text-left">
+        {{apiVersion.patch_session_param_map}}
+      </p>
+    </div>
+  </div>
+  <div class="panel panel-default" ng-show="apiVersion.is_patch">
+    <div class="panel-heading">
+      <h3 class="panel-title"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> PATCH请求参数说明</h3>
+    </div>
+    <div class="panel-body">
+      <div btf-markdown="apiVersion.patch_input_doc"></div>
+    </div>
+  </div>
+  <div class="panel panel-default" ng-show="apiVersion.is_patch">
+    <div class="panel-heading">
+      <h3 class="panel-title"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> PATCH响应内容说明</h3>
+    </div>
+    <div class="panel-body">
+      <div btf-markdown="apiVersion.patch_output_doc"></div>
+    </div>
+  </div>
+  <hr/>
+  <div class="row">
+    <div class="col-md-offset-2 col-md-10">
+      <button type="button" class="btn btn-primary" ng-click="accept()" ng-disabled="apiVersion.is_audit==2">批准</button>
+      <button type="button" class="btn btn-primary" ng-click="refuse()" ng-disabled="apiVersion.is_audit==1">不批准</button>
+      <button type="button" class="btn btn-default" ng-click="back()">返回</button>
+    </div>
+  </div>
+</form>

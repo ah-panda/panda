@@ -1,0 +1,104 @@
+/* @import url(http://fonts.googleapis.com/css?family=PT+Sans:400,700|Lato:100,300,400);*/
+/* ##########  */
+/*   $GLOBAL   */
+/* ##########  */
+html {
+  height: 100%;
+}
+
+body {
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+@media (min-width: 979px) {
+  body {
+    padding-top: 80px;
+  }
+}
+
+.blue {
+  color: #447fc8;
+}
+
+/* ####### */
+/* $LOGIN  */
+/* ####### */
+#login-wraper {
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  -ms-border-radius: 15px;
+  -o-border-radius: 15px;
+  border-radius: 15px;
+  -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  margin-top: -185px;
+  margin-left: -235px;
+  padding: 25px;
+  width: 420px;
+  height: 320px;
+  background: white;
+  text-align: center;
+}
+
+.login-form legend {
+  margin-top: 5px;
+  margin-bottom: 30px;
+  padding-bottom: 25px;
+}
+
+.login-form .body {
+  padding-bottom: 30px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.login-form .footer {
+  margin-top: 20px;
+}
+
+.login-form .footer .btn {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  margin-left: 15px;
+  padding: 7px 25px;
+  background-image: none;
+}
+
+/* ####### */
+/* $FOOTER */
+/* ####### */
+footer.white {
+  padding-top: 20px;
+  height: 50px;
+  background: white;
+  text-align: center;
+}
+
+/* ###### */
+/* $FONTS */
+/* ###### */
+.login-form legend {
+  font-family: 'Lato', Helvetica, sans-serif;
+  font-size: 36px;
+  font-weight: 300;
+  color: #333333;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.login-form label {
+  font-family: 'Lato', Helvetica, sans-serif;
+  font-size: 20px;
+  color: #333333;
+  font-weight: 300;
+}
+
+.login-form input {
+  width: 180px;
+}

@@ -1,6 +1,7 @@
 package structs
 
 type Result struct {
-	Code int
-	Data interface{}
+	Code    int
+	Message string
+	Data    interface{}
 }

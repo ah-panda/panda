@@ -1,0 +1,266 @@
+
+<div class="row">
+    <div class="col-md-offset-8 col-md-4 text-right">
+      <button type="button" class="btn btn-default" ng-click="showView('byGroup')">分类</button>
+      <button type="button" class="btn btn-default" ng-disabled="!apiDone" ng-click="showView('byOwn')">我的API</button>
+      <button type="button" class="btn btn-default" ng-disabled="!apiDone" ng-click="showView('bySearch')">搜索API</button>
+      <button type="button" class="btn btn-default" ng-disabled="!apiDone" ng-click="showView('all')">全部API</button>
+    </div>
+    <hr/>
+</div>
+<div ng-show="showByGroup">
+  <div>
+	<div class="col-md-12" style="padding-left: 6px;">
+   		<span ng-repeat="metatype in meta_groups">
+    		<a class="btn" style="padding-top:0px;padding-left:0px" ng-click="select_metatype(metatype.api_groups)">{{metatype.metatype}}</a>
+    	</span>
+   		<button type="button" class="btn btn-default btn-sm text-right" ng-click="hideGroupDetail()" ng-show="groups_of_metatype.length != 0">收起</button>
+   	</div>
+    <div style="border:1px solid;padding-left: 6px;" class="col-md-12" ng-show="groups_of_metatype.length != 0">
+    	<a class="col-md-2 control-label text-left" style="padding-left:0px" href="#/api_version_list/{{group.group_id}}" "ng-click="select_group(group)" ng-repeat="group in groups_of_metatype">{{group.group_description}}</a>
+    </div>
+  </div>
+  <div class="col-md-12" style="padding-left: 0px;" >
+  <table class="table">
+    <thead>
+      <tr>
+        <th>分类</th>
+        <th>名称</th>
+        <th class="text-center">规范版本</th>
+        <th>企业ID</th>
+        <th class="text-center">接口个数</th>
+        <th class="text-center">版本个数</th>
+        <th class="text-center">动作</th>
+        <th>管理员</th>
+        <th class="text-center" width="250px">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="group in apiGroupListToBeShow">
+        <td>{{group.group_description}}</td>
+        <td>{{group.group_name}}</td>
+        <td class="text-center">{{group.spec}}</td>
+        <td>{{group.developer_id}}</td>
+        <td class="text-center">{{group.api_count}}</td>
+        <td class="text-center">{{group.version_count}}</td>
+        <td class="text-center">
+          <button ng-disabled={{is_product||!isAccessApiGroup(group.group_id)}} class="btn btn-primary btn-sm" ng-click="openSyncApiGroup(group.group_id)">批量发布</button>
+        </td>
+        <td>
+          <div ng-repeat="admin in group.group_administrator">
+            <span>{{admin}}</span>
+          </div>
+        </td>
+        <td width="250px" class="text-center">
+          <a ng-disabled={{enable_register}} class="btn btn-primary btn-sm" href="#/add_api?apiGroupId={{group.group_id}}">添加API</a>
+          <a class="btn btn-primary btn-sm" href="#/api_version_list/{{group.group_id}}">查看API</a>
+          <a ng-disabled={{!is_product}} class="btn btn-primary btn-sm" href="#/monitor?apiGroupId={{group.group_id}}&groupDescription={{group.group_description}}&groupName={{group.group_name}}">统计监控</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+<div ng-show="showByOwn">
+  <table class="table"  style="TABLE-LAYOUT: fixed" >
+    <thead>
+	  <tr>
+        <th width="20%">接口名称</th>
+        <th width="10%">分类</th>
+        <th width="15%">版本</th>
+        <th width="23%">RestHub URI</th>
+        <th width="12%">负责人</th>
+        <th width="20%">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="api in apiList">
+        <td width="20%" style="word-wrap:break-word">{{api.versions[0].name}}</td>
+        <td width="10%" style="word-wrap:break-word"><a href="#/api_version_list/{{api.versions[0].group_id}}">{{api.versions[0].group_description}}</a></td>
+        <td width="15%" style="word-wrap:break-word">
+          <div ng-repeat="apiVersion in api.versions">
+            <a href="#/api_version_detail/{{apiVersion.id}}">v{{apiVersion.version}}</a>
+            <span class="label" ng-class="getSpecialLabelClass(apiVersion)" ng-show="isSpecialLabelShow(apiVersion)">{{getSpecialLabelText(apiVersion)}}</span>
+          </div>
+        </td>
+        <td width="23%" style="word-wrap:break-word">
+          <div ng-repeat="apiVersion in api.versions">
+            {{apiVersion.outer_url}}
+          </div>
+        </td>
+        <td width="12%" style="word-wrap:break-word">
+          <div ng-repeat="apiVersion in api.versions">
+            {{apiVersion.creator}}
+          </div>
+        </td>
+        <td width="20%" style="word-wrap:break-word">
+          <a ng-disabled={{enable_register}} class="btn btn-primary btn-sm" href="#/add_api_version?api_id={{api.api_id}}">添加版本</a>
+          <a class="btn btn-primary btn-sm" href="#/update_api/{{api.api_id}}">修改</a>
+          <button class="btn btn-danger btn-sm" ng-click="deleteApi(api.api_id, api.versions.length)">删除</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div ng-show="showBySearch">
+  <div class="row" ng-show="!showSearchCriteria">
+    <div class="col-md-offset-10 col-md-2 text-right">
+	   <button type="button" class="btn btn-default" ng-click="showCriteria(true)">展开查询条件</button>
+    </div>
+  </div>
+
+  <div ng-show="showSearchCriteria">
+  	<div class="row"> </div>
+ 	<form name="searchApiForm" class="form-horizontal" role="form">
+      <div class="form-group">
+        <label for="creator" class="col-md-2 control-label">负责人</label>
+        <div class="col-md-6">
+          <input type="text" class="form-control" id="creator" name="creator" ng-model="s_creator" ></input>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="outer_url" class="col-md-2 control-label">RestHub URI</label>
+        <div class="col-md-6">
+          <input type="text" class="form-control" id="outer_url" name="outer_url" ng-model="s_outerUrl">
+        </div>
+        <!--span for='outer_url' class="col-md-2 control-label text-left">变量使用<strong>双大括号</strong>!</span-->
+      </div>
+      <div class="form-group">
+        <label for="api_name" class="col-md-2 control-label">接口名称</label>
+        <div class="col-md-6">
+          <input type="text" class="form-control" id="api_name" name="api_name" ng-model="s_api_name">
+        </div>
+        <!--span for='outer_url' class="col-md-2 control-label text-left">变量使用<strong>双大括号</strong>!</span-->
+      </div>
+      <div class="form-group">
+        <label for="cookies" class="col-md-2 control-label">API Cookies</label>
+        <div class="col-md-6">
+          <input type="text" class="form-control" id="cookies" name="cookies" ng-model="s_cookies">
+        </div>
+        <!--span for='outer_url' class="col-md-2 control-label text-left">变量使用<strong>双大括号</strong>!</span-->
+      </div>
+      <div class="form-group">
+        <label for="group" class="col-md-2 control-label">类别</label>
+        <div class="col-md-6">
+          <select class="form-control" id="group" name="group" ng-model="s_group_id" ng-options="apiGroup.group_id as apiGroup.group_description for apiGroup in apiGroupListForSearch" ng-show="false">
+          </select>
+          <angucomplete id="group_types"
+              placeholder="可输入拼音、汉字搜索分类"
+              pause="5"
+              selectedobject="selectedApiGroupObj"
+              localdata="apiGroupList"
+              searchfields="group_description,group_description_pinyin"
+              titlefield="group_description"
+              minlength="1"
+              inputclass="form-control form-control-small">
+        </div>
+      </div>
+      
+     <div class="form-group">
+       <label for="audit" class="col-md-2 control-label">审核状态</label>
+       <div class="col-md-6">
+         <select class="form-control" id="audit" name="audit" ng-model="s_is_audit" ng-options="a.id as a.name for a in auditMap">
+         </select>
+       </div>
+     </div>
+     <div class="form-group">
+        <label for="auditor" class="col-md-2 control-label">审核者</label>
+        <div class="col-md-6">
+          <input type="text" class="form-control" id="auditor" name="auditor" ng-model="s_auditor" ></input>
+        </div>
+      </div>
+     <div class="form-group">
+       <label for="status" class="col-md-2 control-label">发布状态</label>
+       <div class="col-md-6">
+         <select class="form-control" id="status" name="status" ng-model="s_status" ng-options="a.id as a.name for a in statusMap">
+         </select>
+       </div>
+    </div>
+    <div class="form-group">
+      <div class="col-md-offset-8 col-md-4 text-right">
+      	<button type="button" class="btn btn-default" ng-click="resetCriteria()" ng-disabled="false">重置查询条件</button>
+        <button type="button" class="btn btn-primary" ng-click="searchSubmit()" ng-disabled="false">查询</button>
+        <button type="button" class="btn btn-default" ng-click="showCriteria(false)" ng-disabled="false">折叠查询条件</button>
+      </div>
+    </div>
+   </form>
+ </div>
+ <div ng-show="showSearchResult">
+  <table ng-table="tableParamsSearch" class="table table-condensed" style="TABLE-LAYOUT: fixed" >
+    <thead>
+	  <tr>
+        <th width="20%" style="text-align:left">接口名称</th>
+        <th width="10%" style="text-align:left">分类</th>
+        <th width="15%" style="text-align:left">版本</th>
+        <th width="23%" style="text-align:left">RestHub URI</th>
+        <th width="12%" style="text-align:left">负责人</th>
+        <th width="20%" style="text-align:left">操作</th>
+      </tr>
+    </thead>
+    <tr ng-repeat="api in $data">
+  		<td data-title="'接口名称'" style="word-wrap:break-word">{{api.versions[0].name}}</td>
+        <td data-title="'分类'" style="word-wrap:break-word"><a href="#/api_version_list/{{api.versions[0].group_id}}">{{api.versions[0].group_description}}</a></td>
+        <td data-title="'版本'" style="word-wrap:break-word">
+          <div ng-repeat="apiVersion in api.versions">
+            <a href="#/api_version_detail/{{apiVersion.id}}">v{{apiVersion.version}}</a>
+            <span class="label" ng-class="getSpecialLabelClass(apiVersion)" ng-show="isSpecialLabelShow(apiVersion)">{{getSpecialLabelText(apiVersion)}}</span>
+          </div>
+        </td>
+        <td data-title="'RestHub URI'" style="word-wrap:break-word">
+          <div ng-repeat="apiVersion in api.versions">
+            {{apiVersion.outer_url}}
+          </div>
+        </td>
+        <td data-title="'负责人'" style="word-wrap:break-word">
+          <div ng-repeat="apiVersion in api.versions">
+            {{apiVersion.creator}}
+          </div>
+        </td>
+        <td data-title="'操作'" style="word-wrap:break-word">
+          <a ng-disabled={{config.switch_product}} class="btn btn-primary btn-sm" href="#/add_api_version?api_id={{api.api_id}}">添加版本</a>
+          <a class="btn btn-primary btn-sm" href="#/update_api/{{api.api_id}}">修改</a>
+          <button class="btn btn-danger btn-sm" ng-click="deleteApi(api.api_id, api.versions.length)">删除</button>
+        </td>
+    </tr>
+  </table>
+ </div>
+</div>
+<div ng-show="showByAll">
+  <table ng-table="tableParamsAll" class="table table-condensed" style="TABLE-LAYOUT: fixed" >
+  	<thead>
+	  <tr>
+        <th width="20%" style="text-align:left">接口名称</th>
+        <th width="10%" style="text-align:left">分类</th>
+        <th width="15%" style="text-align:left">版本</th>
+        <th width="23%" style="text-align:left">RestHub URI</th>
+        <th width="12%" style="text-align:left">负责人</th>
+        <th width="20%" style="text-align:left">操作</th>
+      </tr>
+    </thead>
+  	<tr ng-repeat="api in $data">
+  		<td data-title="'接口名称'" style="word-wrap:break-word">{{api.versions[0].name}}</td>
+        <td data-title="'分类'" style="word-wrap:break-word"><a href="#/api_version_list/{{api.versions[0].group_id}}">{{api.versions[0].group_description}}</a></td>
+        <td data-title="'版本'" style="word-wrap:break-word">
+          <div ng-repeat="apiVersion in api.versions">
+            <a href="#/api_version_detail/{{apiVersion.id}}">v{{apiVersion.version}}</a>
+            <span class="label" ng-class="getSpecialLabelClass(apiVersion)" ng-show="isSpecialLabelShow(apiVersion)">{{getSpecialLabelText(apiVersion)}}</span>
+          </div>
+        </td>
+        <td data-title="'RestHub URI'" style="word-wrap:break-word">
+          <div ng-repeat="apiVersion in api.versions">
+            {{apiVersion.outer_url}}
+          </div>
+        </td>
+        <td data-title="'负责人'" style="word-wrap:break-word">
+          <div ng-repeat="apiVersion in api.versions">
+            {{apiVersion.creator}}
+          </div>
+        </td>
+        <td data-title="'操作'" style="word-wrap:break-word">
+          <a ng-disabled={{enable_register}} class="btn btn-primary btn-sm" href="#/add_api_version?api_id={{api.api_id}}">添加版本</a>
+          <a class="btn btn-primary btn-sm" href="#/update_api/{{api.api_id}}">修改</a>
+          <button class="btn btn-danger btn-sm" ng-click="deleteApi(api.api_id, api.versions.length)">删除</button>
+        </td>
+    </tr>
+  </table>
+</div>

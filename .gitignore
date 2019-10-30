@@ -9,11 +9,10 @@ whoapi
 
 # Mac OS X
 *.DS_Store
-app/utils/log/t.log
-housekeepingapi
-housekeepingapi.tar.gz
 
 # Folders
 _obj
 _test
 .cover
+
+panda
