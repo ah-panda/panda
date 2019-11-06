@@ -23,6 +23,10 @@ func NewGin() *gin.Engine {
 	} else {
 		r.StaticFS("/static", static.NewHTTPFileSystem())
 	}
+	r.GET("/favicon.ico", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/static/favicon.ico")
+		return
+	})
 
 	r.GET("/version", func(c *gin.Context) {
 		res, err := status.Version()
@@ -33,15 +37,20 @@ func NewGin() *gin.Engine {
 		c.JSON(res.Code, res.Data)
 	})
 
-	r.GET("/user", func(c *gin.Context) {
-
-	})
-
-	r.GET("/admin", func(c *gin.Context) {
-
-	})
-
 	r.POST("/login", login)
+
+	authorized := r.Group("/", sessionMiddle)
+	authorized.Use()
+	{
+		authorized.Any("/logout", logout)
+		authorized.GET("/user", func(c *gin.Context) {
+
+		})
+
+		authorized.GET("/admin", func(c *gin.Context) {
+
+		})
+	}
 
 	return r
 }

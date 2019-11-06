@@ -2,7 +2,6 @@ package routers
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/ah-panda/panda/pkg/api/structs"
 	"github.com/ah-panda/panda/pkg/logging"
@@ -14,7 +13,7 @@ func login(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
 
-	res, err := user.Login(username, password)
+	ctx, err := user.Login(username, password, c.ClientIP())
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, structs.Result{
 			Code:    http.StatusUnauthorized,
@@ -23,7 +22,10 @@ func login(c *gin.Context) {
 		return
 	}
 
-	logging.Warnf("Login:%+v", res)
+	logging.Warnf("Login:%+v", ctx)
 
-	c.SetCookie("resthub_user_id", strconv.Itoa(res.User.UserId), 3600*24*7, "/", ".", false, true)
+	ctx.WithRender(c)
+	postSession(ctx)
+
+	ctx.JSON(http.StatusOK, structs.NewResult(http.StatusOK, ctx))
 }

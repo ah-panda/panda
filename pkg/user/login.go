@@ -2,18 +2,19 @@ package user
 
 import (
 	"errors"
+	"time"
 
+	"github.com/ah-panda/panda/pkg/context"
 	"github.com/ah-panda/panda/pkg/models"
 )
 
-func Login(username, password string) (*models.UserBasicInfo, error) {
+func Login(username, password, ip string) (*context.APIContext, error) {
 	ubi, err := models.GetUserBasicInfoByUsername(username)
 	if err != nil {
-		return ubi, err
+		return nil, err
 	}
 
 	sign := getSignPasswd(username, password, ubi.DeveloperId, ubi.CreateTime)
-
 	if ubi.Password != sign {
 		return nil, errors.New("用户名或密码错误")
 	}
@@ -25,5 +26,14 @@ func Login(username, password string) (*models.UserBasicInfo, error) {
 		return nil, err
 	}
 
-	return ubi, nil
+	ctx := &context.APIContext{
+		UserID:      ubi.User.UserId,
+		Username:    ubi.Username,
+		DeveloperId: ubi.DeveloperId,
+		Sign:        sign,
+		ClientIP:    ip,
+		Timestamp:   time.Now().Unix(),
+	}
+
+	return ctx, nil
 }

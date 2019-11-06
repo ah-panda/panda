@@ -40,7 +40,7 @@ func (ubi *UserBasicInfo) LoadUser() error {
 }
 
 func (ubi *UserBasicInfo) loadUser(e Engine) (err error) {
-	if ubi.Developer == nil {
+	if ubi.User == nil {
 		ubi.User, err = getUserByRtx(e, ubi.Username)
 		if err != nil {
 			return fmt.Errorf("getUserByRtx [%s]: %v", ubi.Username, err)
