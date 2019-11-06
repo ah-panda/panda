@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="loginManager">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="favicon.ico">
+
+  <title>Login RestHub Manager</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <!-- Le styles -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
+  <script>
+      document.write("<link href=css/login.css?"+Math.random()+" rel=stylesheet>");
+  </script>
+  <link href="css/sweetalert.css" rel="stylesheet">
+</head>
+<body onload="detectBrowser()">
+  <div class="container">
+      <div id="login-wraper" style="display:none;">
+          <form class="form login-form" ng-controller="LoginController" ng-submit="submit()">
+              <legend><span class="blue">RestHub Manager</span></legend>
+              <span>请使用AD账户登录</span>
+              <div class="body">
+                  <div class="row">
+                  <label>用户</label>
+                  <input type="text" ng-model="username" autofocus required>
+                  </div>
+                  <div class="row">
+                  <label>密码</label>
+                  <input type="password" ng-model="password" required>
+                  </div>
+              </div>
+              <div class="footer">
+                  <button type="submit" class="btn btn-success">登录</button>
+              </div>
+          </form>
+      </div>
+  </div>
+
+  <script>
+    function isIEBrowser()
+    {
+       if ((isIE = navigator.userAgent.indexOf("MSIE")!=-1) && 
+       	   (navigator.userAgent.indexOf('Opera') < 0)) { 
+       		return true; 
+   	   } 
+       return false;
+    }
+     
+    function detectBrowser()
+    {
+        if(isIEBrowser()){
+            alert("Sorry, 暂不支持IE系列（以及关联）浏览器!");
+        }else{
+            document.getElementById('login-wraper').style.display = "block";
+        }
+    }
+  </script>
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/angular.min.js"></script>
+  <script src="js/angular-route.min.js"></script>
+  <script src="js/sweetalert.min.js"></script>
+  <script>
+    document.write("<s"+"cript type='text/javascript' src='js/app.js?"+Math.random()+"'></s"+"cript>");
+  </script>
+</body>
+</html>
+

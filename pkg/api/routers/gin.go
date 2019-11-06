@@ -4,7 +4,8 @@ import (
 	"net/http"
 
 	"github.com/ah-panda/panda/pkg/api/status"
-	static2 "github.com/ah-panda/panda/pkg/static"
+	"github.com/ah-panda/panda/pkg/config/setting"
+	"github.com/ah-panda/panda/pkg/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,7 +14,15 @@ func NewGin() *gin.Engine {
 
 	gin.SetMode(gin.ReleaseMode)
 
-	r.StaticFS("/static", static2.NewHTTPFileSystem())
+	r.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/static/index.html")
+	})
+
+	if setting.HttpServerCfg.DevMode {
+		r.StaticFS("/static", static.NewHTTPFileSystemDev())
+	} else {
+		r.StaticFS("/static", static.NewHTTPFileSystem())
+	}
 
 	r.GET("/version", func(c *gin.Context) {
 		res, err := status.Version()
@@ -23,6 +32,16 @@ func NewGin() *gin.Engine {
 		}
 		c.JSON(res.Code, res.Data)
 	})
+
+	r.GET("/user", func(c *gin.Context) {
+
+	})
+
+	r.GET("/admin", func(c *gin.Context) {
+
+	})
+
+	r.POST("/login", login)
 
 	return r
 }

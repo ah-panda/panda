@@ -1,0 +1,20 @@
+<h3>查看API白名单</h3>
+
+<table class="table table-bordered">
+  <thead>
+      <tr>
+        <th class="text-center">序号</th>
+        <th class="text-center">开发者账号</th>
+        <th class="text-center">API ID</th>
+        <th class="text-center">动作</th>
+      </tr>
+  </thead>
+  <tbody class="table-word-break">
+    <tr ng-repeat="apiWl in apiWls">
+      <td class="text-center">{{$index + 1}}</td>
+      <td class="text-center">{{apiWl.developer_id}}</td>
+      <td class="text-center">{{apiWl.api_id}}</td>
+      <td class="text-center"><button type="button" class="btn btn-danger btn-sm" ng-click="deleteApiWl(apiWl.api_id, apiWl.developer_id)">删除</button></td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,36 @@
+<h3>查看管理员</h3>
+
+<form name="viewMemberForm" class="form-horizontal" role="form" ng-submit="viewMemberSubmit()">
+  <div class="form-group">
+    <label for="viewMember" class="col-md-4 control-label">分组</label>
+    <div class="col-md-6">
+      <select name="group" class="form-control" id="group" ng-model="viewMember.group_id" ng-options="a.group_id as a.group_description for a in groups" required>
+          <option value="">请选择分组</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-md-offset-4 col-md-6">
+      <button type="submit" class="btn btn-primary btn-sm">查看</button>
+    </div>
+  </div>
+</form>
+
+<table class="table table-bordered">
+  <thead>
+      <tr>
+        <th class="text-center">开发者ID</th>
+        <th class="text-center">用户名</th>
+        <th class="text-center">角色</th>
+        <th class="text-center">动作</th>
+      </tr>
+  </thead>
+  <tbody class="table-word-break">
+    <tr ng-repeat="member in members">
+      <td class="text-center">{{member.developer_id}}</td>
+      <td class="text-center">{{member.rtx}}</td>
+      <td class="text-center">{{member.charactar|charactarTxt}}</td>
+      <td class="text-center"><button type="button" class="btn btn-danger btn-sm" ng-click="deleteMember(member.user_id, member.group_id, member.developer_id)">删除</button></td>
+    </tr>
+  </tbody>
+</table>

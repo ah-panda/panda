@@ -9,3 +9,6 @@ os :  gen
 
 test:
 	go test ./... -race -coverprofile=coverage.txt -covermode=atomic
+
+dev:
+    go run main.go  server --http.devMode

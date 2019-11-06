@@ -1,0 +1,664 @@
+<div class="row col-md-12" ng-show="config.switch_product  && forbiddenAddAPIWhenProductEnv">生产环境下禁止直接添加API,请在测试环境上添加并于测试通过后发布到生产环境(2015.9.7)</div>
+<div ng-show="!config.switch_product  || !forbiddenAddAPIWhenProductEnv">
+<form name="addForm" class="form-horizontal" role="form" ng-submit="submit()">
+  <!--div class="row">
+    <div class="col-md-2"><p class="text-right">版本</p></div>
+    <div class="col-md-6">
+      <p class="text-left">
+        v{{version}}
+      </p>
+    </div>
+  </div-->
+  <div class="form-group">
+    <label for="version" class="col-md-2 control-label">版本</label>
+    <div class="col-md-6">
+      <input type="number" name="version" class="col-md-6 form-control ng-valid-number ng-invalid ng-invalid-min" id="version" ng-model="version" min="1" step="1" max="1000" required>
+    </div>
+    <span for='version' class="col-md-2 control-label text-left">v{{version}}</span>
+  </div>
+  <div class="form-group">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="addForm.version.$error.number || addForm.version.$error.min || addForm.version.$error.max">请输入<strong>{{versionMin}}-1000</strong>的整数</span>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="status" class="col-md-2 control-label">状态</label>
+    <div class="col-md-6">
+      <select class="form-control" id="status" ng-model="status" ng-options="a.id as a.name for a in statusMap" ng-disabled="true" required>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="outer_url" class="col-md-2 control-label">负责人</label>
+    <div class="col-md-6">
+      <input type="text" class="form-control" id="creator" ng-model="creator" disabled></input>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="outer_url" class="col-md-2 control-label">修改者</label>
+    <div class="col-md-6">
+      <input type="text" class="form-control" id="modifier" ng-model="modifier" disabled></input>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="outer_url" class="col-md-2 control-label">RestHub URI</label>
+    <div class="col-md-6">
+      <input type="text" class="form-control" id="outer_url" ng-model="outerUrl" required>
+    </div>
+    <span for='outer_url' class="col-md-2 control-label text-left">变量使用<strong>双大括号</strong>!</span>
+  </div>
+  <!--div class="form-group" ng-show={{config.switch_product}}>
+    <label for="product_url" class="col-md-2 control-label">API 生产环境URL</label>
+    <div class="col-md-6">
+      <input name="productUrl" type="url" class="form-control" id="product_url" ng-model="productUrl" ng-required={{config.switch_product}}>
+    </div>
+    <span for='product_url' class="col-md-2 control-label text-left">变量使用<strong>双大括号</strong>!</span>
+  </div-->
+  <!--div class="form-group" ng-show={{config.switch_product}}>
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="config.switch_product && addForm.productUrl.$error.required">必填!</span>
+      <span class="error" ng-show="config.switch_product && addForm.productUrl.$error.url">不是合法的URL</span>
+    </div>
+  </div-->
+  <!--div class="form-group" ng-show={{config.switch_pre}}>
+    <label for="pre_url" class="col-md-2 control-label">API 预发布环境URL</label>
+    <div class="col-md-6">
+      <input name="preUrl" type="url" class="form-control" id="pre_url" ng-model="preUrl" ng-required={{config.switch_pre}}>
+    </div>
+    <span for='pre_url' class="col-md-2 control-label text-left">变量使用<strong>双大括号</strong>!</span>
+  </div-->
+  <!--div class="form-group" ng-show={{config.switch_pre}}>
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="config.switch_pre && addForm.preUrl.$error.required">必填!</span>
+      <span class="error" ng-show="config.switch_pre && addForm.preUrl.$error.url">不是合法的URL</span>
+    </div>
+  </div-->
+  <!--div class="form-group" ng-show={{config.switch_test}}>
+    <label for="test_url" class="col-md-2 control-label">API 集成测试URL</label>
+    <div class="col-md-6">
+      <input name="testUrl" type="url" class="form-control" id="test_url" ng-model="testUrl" ng-required={{config.switch_test}}>
+    </div>
+    <span for='test_url' class="col-md-2 control-label text-left">变量使用<strong>双大括号</strong>!</span>
+  </div-->
+  <!--div class="form-group" ng-show={{config.switch_test}}>
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="config.switch_test && addForm.testUrl.$error.required">必填!</span>
+      <span class="error" ng-show="config.switch_test && addForm.testUrl.$error.url">不是合法的URL</span>
+    </div>
+  </div-->
+  <!--div class="form-group" ng-show={{config.switch_sandbox}}>
+    <label for="sandbox_url" class="col-md-2 control-label">API 开发联调(Sandbox) URL</label>
+    <div class="col-md-6">
+      <input name="sandboxUrl" type="url" class="form-control" id="sandbox_url" ng-model="sandboxUrl" ng-required={{config.switch_sandbox}}>
+    </div>
+    <span for='product_url' class="col-md-2 control-label text-left">变量使用<strong>双大括号</strong>!</span>
+  </div-->
+  <!--div class="form-group" ng-show={{config.switch_sandbox}}>
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="config.switch_sandbox && addForm.sandboxUrl.$error.required">必填!</span>
+      <span class="error" ng-show="config.switch_sandbox && addForm.sandboxUrl.$error.url">不是合法的URL</span>
+    </div>
+  </div-->
+  <div class="form-group">
+    <label for="upstream" class="col-md-2 control-label">API虚拟服务器</label>
+    <div class="col-md-6">
+      <select id="upstream" class="form-control" ng-model="upstreamId" ng-options="upstream.id as upstream.name for upstream in upstreamList" required></select>
+    </div>
+    <span for='upstream' class="col-md-2 control-label text-left"><a href="http://mock.mumway-inc.com/bin/create" target="_blank">注册mock接口</a></span>
+  </div>
+  <div class="form-group">
+    <label for="inner_url" class="col-md-2 control-label">BACKEND URI</label>
+    <div class="col-md-6">
+      <input name="innerUrl" type="text" class="form-control" id="inner_url" ng-model="innerUrl" ng-required="true">
+    </div>
+    <span for='inner_url' class="col-md-2 control-label text-left">变量使用<strong>双大括号</strong>!</span>
+  </div>
+  <div class="form-group">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="addForm.sandboxUrl.$error.required">必填!</span>
+      <span class="error" ng-show="addForm.sandboxUrl.$error.url">不是合法的URL</span>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="access" class="col-md-2 control-label">授权方式</label>
+    <div class="col-md-6">
+      <select class="form-control" id="access" ng-model="access" ng-options="a.id as a.name for a in accessMap" required disabled="disabled">
+      </select>
+    </div>
+  </div>
+  <div class="form-group" ng-show="false">
+    <label for="token" class="col-md-2 control-label">API签名</label>
+    <div class="col-md-6">
+      <input name="token" type="text" class="form-control" id="token" ng-model="token" ng-maxlength="32" ng-pattern='/^(\w+){0,}$/'>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="addForm.token.$error.pattern">不是合法的token,只能包含英文字符、数字和下划线</span>
+      <span class="error" ng-show="addForm.token.$error.maxlength">token最大长度为32</span>
+    </div>
+  </div>
+  <div class="form-group" ng-show="false">
+    <label for="depend" class="col-md-2 control-label">API前置条件</label>
+    <div class="col-md-6">
+      <input name="depend" type="text" class="form-control" id="depend" ng-model="depend" ng-maxlength="256" disabled>
+      <!-- ng-pattern='/^(\w+_\w+_\w+){0,}$/'-->
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-md-offset-2 col-md-6">
+      <!--span class="error" ng-show="updateForm.depend.$error.pattern">不是合法的dpend,格式为apiVersionId_Token_Method</span -->
+      <span class="error" ng-show="updateForm.depend.$error.maxlength">最大长度为256</span>
+    </div>
+  </div>
+  <div class="form-group" ng-show="false">
+    <label for="max_per_minute" class="col-md-2 control-label">每分钟请求上限</label>
+    <div class="col-md-6">
+      <input type="number" class="form-control" id="max_per_minute" ng-model="maxPerMinute" min="0" required>
+    </div>
+  </div>
+  <div class="form-group" ng-show="false">
+    <label for="timeout" class="col-md-2 control-label">TCP连接超时(毫秒)</label>
+    <div class="col-md-6">
+      <pre type="text" class="form-control" id="modifier">{{connectTimeout}}</pre>
+    </div>
+  </div> <div class="form-group" ng-show="false">
+    <label for="timeout" class="col-md-2 control-label">HTTP请求超时(毫秒)</label>
+    <div class="col-md-6">
+      <input type="number" class="form-control" id="timeout" ng-model="requestTimeout" min="1" max="60000" required>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="detail_log" class="col-md-2 control-label">详细日志级别</label>
+    <div class="col-md-6">
+      <select class="form-control" id="detail_log" ng-model="detail_log" ng-options="a.id as a.name for a in detail_log_Map" disabled="true" required>
+      </select>
+     </div>
+  </div>
+  <div class="form-group" ng-show="false">
+    <label for="cookies" class="col-md-2 control-label">API Cookies</label>
+    <div class="col-md-6">
+      <textarea class="form-control" rows="3" name="cookies" id="cookies" ng-model="cookies" ng-maxlength="264" ng-pattern='/^(|(b_[a-z_0-9]+)(,b_[a-z_0-9]+){0,})$/'></textarea>
+      <!--input name="cookies" type="text" class="form-control" id="cookies" ng-model="cookies" ng-maxlength="264" ng-pattern='/^(|(b_\w+)(,b_\w+){0,})$/'-->
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-md-offset-2 col-md-10">
+      <span class="error" ng-show="addForm.cookies.$error.pattern">不是合法的cookie，请以"b_"开头且只能包含英文小写字符、数字和下划线。cookie间使用逗号分隔</span>
+      <span class="error" ng-show="addForm.cookies.$error.maxlength">API Cookies的最大长度为264</span>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="selector" class="col-md-2 control-label">选择器</label>
+    <div class="col-md-6">
+      <select id="selector" class="form-control" ng-model="selectorId" ng-options="selector.id as selector.name for selector in selectorList" required></select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="scheduler" class="col-md-2 control-label">调度器</label>
+    <div class="col-md-6">
+      <select id="scheduler" class="form-control" ng-model="schedulerId" ng-options="scheduler.id as scheduler.name for scheduler in schedulerList" required></select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-md-2 control-label">是否允许外网http请求</label>
+    <div class="col-md-6">
+      <label class="radio-inline" >
+        <input type="radio" ng-model="isInternetHttp" value="1">是
+      </label>
+      <label class="radio-inline">
+        <input type="radio" ng-model="isInternetHttp" value="0">否
+      </label>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="description" class="col-md-2 control-label">描述(Markdown)</label>
+    <div class="col-md-6">
+      <textarea name="description" class="form-control" rows="6" id="description" ng-model="description" ng-maxlength="1024" placeholder="描述api概况，包括功能和性能" required></textarea>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="addForm.description.$error.maxlength">最大长度为1024</span>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-md-2 control-label">HTTP Method</label>
+    <div class="col-md-6">
+      <label class="checkbox-inline">
+        <input type="checkbox" ng-model="isGet">GET
+      </label>
+      <label class="checkbox-inline">
+        <input type="checkbox" ng-model="isPost">POST
+      </label>
+      <label class="checkbox-inline">
+        <input type="checkbox" ng-model="isPut">PUT
+      </label>
+      <label class="checkbox-inline">
+        <input type="checkbox" ng-model="isDelete">DELETE
+      </label>
+      <label class="checkbox-inline">
+        <input type="checkbox" ng-model="isPatch">PATCH
+      </label>
+    </div>
+  </div>
+  <!-- GET -->
+  <div class="form-group" ng-show="isGet">
+    <label for="input_doc" class="col-md-2 control-label">GET方法</label>
+  </div>
+  <div class="form-group" ng-show="isGet">
+    <label class="col-md-2 control-label">Cache过期时间（秒）</label>
+    <div class="col-md-6">
+      <input type="number" class="form-control" id="get_cache_expires" ng-model="getCacheExpires" min="0" max="604800" required>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isGet">
+    <label class="col-md-2 control-label">是否签名</label>
+    <div class="col-md-6">
+      <label class="radio-inline" >
+        <input type="radio" ng-model="getIsToken" value="1">是
+      </label>
+      <label class="radio-inline">
+        <input type="radio" ng-model="getIsToken" value="0">否
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isGet">
+    <label class="col-md-2 control-label">网络访问权限</label>
+    <div class="col-md-6">
+      <label class="radio-inline" >
+        <input type="radio" ng-model="getIsPrivate" value="1">可信网络(包含内网)
+      </label>
+      <label class="radio-inline">
+        <input type="radio" ng-model="getIsPrivate" value="0">公网
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isGet">
+    <label class="col-md-2 control-label">是否需要认证</label>
+    <div class="col-md-6">
+      <label class="checkbox-inline" for="get_is_need_check">
+        <input type="checkbox" id="get_is_need_check" ng-model="getIsNeedCheck">需要认证
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="getIsNeedCheck && isGet">
+    <label class="col-md-2 control-label">认证方式</label>
+    <div class="col-md-6">
+      <label class="checkbox-inline" for="get_is_check_app">
+        <input type="checkbox" id="get_is_check_app" ng-model="getIsCheckApp">Key/Secret认证
+      </label>
+      <label class="checkbox-inline" for="get_is_check_session">
+        <input type="checkbox" id="get_is_check_session" ng-model="getIsCheckSession">Session认证
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="getIsNeedCheck && getIsCheckSession && isGet">
+    <label for="get_session_param_map" class="col-md-2 control-label">Session与参数对应关系</label>
+    <div class="col-md-6">
+      <input name="get_session_param_map" type="text" class="form-control" id="get_session_param_map" ng-model="get_session_param_map" ng-required="getIsNeedCheck && getIsCheckSession && isGet" ng-pattern='/^{}$|^{"[a-z A-z]+":"s_uid"}$|^{"[a-z A-z]+":"s_puid"}$|^{"[a-z A-z]+":"s_bind"}$/'>
+    </div>
+    <span for="get_session_param_map" class="col-md-2 control-label">示例: {"uid":"s_uid"}</span>
+  </div>
+  <div class="form-group" ng-show="isGet">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="isGet && addForm.get_session_param_map.$error.required">必填!</span>
+      <span class="error" ng-show="isGet && addForm.get_session_param_map.$error.pattern">不是合法的表达式</span>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isGet">
+    <label for="get_input_doc" class="col-md-2 control-label">请求参数说明(Markdown)</label>
+    <div class="col-md-6">
+      <textarea name="get_input_doc" class="form-control" rows="6" id="get_input_doc" ng-model="getInputDoc" ng-maxlength="1024" placeholder="对HTTP请求参数做详细说明" ng-required="isGet"></textarea>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isGet">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="addForm.get_input_doc.$error.maxlength">最大长度为1024</span>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isGet">
+    <label for="get_output_doc" class="col-md-2 control-label">响应内容说明(Markdown)</label>
+    <div class="col-md-6">
+      <textarea name="get_output_doc" class="form-control" rows="6" id="get_output_doc" ng-model="getOutputDoc" ng-maxlength="1024" placeholder="对HTTP响应内容做详细说明" ng-required="isGet"></textarea>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isGet">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="addForm.get_output_doc.$error.maxlength">最大长度为1024</span>
+    </div>
+  </div>
+  <!--div class="form-group" ng-show="isGet">
+    <label for="get_test_input_doc" class="col-md-2 control-label">压测URL</label>
+    <div class="col-md-6">
+      <textarea class="form-control" rows="6" id="get_test_input_doc" ng-model="getTestInputDoc" placeholder="" ng-required="isGet"></textarea>
+    </div>
+  </div-->
+  <!-- POST -->
+  <div class="form-group" ng-show="isPost">
+    <label for="input_doc" class="col-md-2 control-label">POST方法</label>
+  </div>
+  <div class="form-group" ng-show="isPost">
+    <label class="col-md-2 control-label">是否签名</label>
+    <div class="col-md-6">
+      <label class="radio-inline" >
+        <input type="radio" ng-model="postIsToken" value="1">是
+      </label>
+      <label class="radio-inline">
+        <input type="radio" ng-model="postIsToken" value="0">否
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPost">
+    <label class="col-md-2 control-label">网络访问权限</label>
+    <div class="col-md-6">
+      <label class="radio-inline" >
+        <input type="radio" ng-model="postIsPrivate" value="1">可信网络(包含内网)
+      </label>
+      <label class="radio-inline">
+        <input type="radio" ng-model="postIsPrivate" value="0">公网
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPost">
+    <label class="col-md-2 control-label">是否需要认证</label>
+    <div class="col-md-6">
+      <label class="checkbox-inline" for="post_is_need_check">
+        <input type="checkbox" id="post_is_need_check" ng-model="postIsNeedCheck">需要认证
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="postIsNeedCheck && isPost">
+    <label class="col-md-2 control-label">认证方式</label>
+    <div class="col-md-6">
+      <label class="checkbox-inline" for="post_is_check_app">
+        <input type="checkbox" id="post_is_check_app" ng-model="postIsCheckApp">Key/Secret认证
+      </label>
+      <label class="checkbox-inline" for="post_is_check_session">
+        <input type="checkbox" id="post_is_check_session" ng-model="postIsCheckSession">Session认证
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="postIsNeedCheck && postIsCheckSession && isPost">
+    <label for="post_session_param_map" class="col-md-2 control-label">Session与参数对应关系</label>
+    <div class="col-md-6">
+      <input  name="post_session_param_map" type="text" class="form-control" id="post_session_param_map" ng-model="post_session_param_map" ng-required="postIsNeedCheck && postIsCheckSession && isPost" ng-pattern='/^{}$|^{"[a-z A-z]+":"s_uid"}$|^{"[a-z A-z]+":"s_puid"}$|^{"[a-z A-z]+":"s_bind"}$/'>
+    </div>
+    <span for="post_session_param_map" class="col-md-2 control-label">示例: {"uid":"s_uid"}</span>
+  </div>
+  <div class="form-group" ng-show="isPost">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="isPost && addForm.post_session_param_map.$error.required">必填!</span>
+      <span class="error" ng-show="isPost && addForm.post_session_param_map.$error.pattern">不是合法的表达式</span>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPost">
+    <label for="post_input_doc" class="col-md-2 control-label">请求参数说明(Markdown)</label>
+    <div class="col-md-6">
+      <textarea name="post_input_doc" class="form-control" rows="6" id="post_input_doc" ng-model="postInputDoc" ng-maxlength="1024" placeholder="对HTTP请求参数做详细说明" ng-required="isPost"></textarea>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPost">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="addForm.post_input_doc.$error.maxlength">最大长度为1024</span>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPost">
+    <label for="post_output_doc" class="col-md-2 control-label">响应内容说明(Markdown)</label>
+    <div class="col-md-6">
+      <textarea name="post_output_doc" class="form-control" rows="6" id="post_output_doc" ng-model="postOutputDoc" ng-maxlength="1024" placeholder="对HTTP响应结果做详细说明" ng-required="isPost"></textarea>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPost">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="addForm.post_output_doc.$error.maxlength">最大长度为1024</span>
+    </div>
+  </div>
+  <!-- PUT -->
+  <div class="form-group" ng-show="isPut">
+    <label for="input_doc" class="col-md-2 control-label">PUT方法</label>
+  </div>
+  <div class="form-group" ng-show="isPut">
+    <label class="col-md-2 control-label">是否签名</label>
+    <div class="col-md-6">
+      <label class="radio-inline" >
+        <input type="radio" ng-model="putIsToken" value="1">是
+      </label>
+      <label class="radio-inline">
+        <input type="radio" ng-model="putIsToken" value="0">否
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPut">
+    <label class="col-md-2 control-label">网络访问权限</label>
+    <div class="col-md-6">
+      <label class="radio-inline">
+        <input type="radio" ng-model="putIsPrivate" value="1">可信网络(包含内网)
+      </label>
+      <label class="radio-inline">
+        <input type="radio" ng-model="putIsPrivate" value="0">公网
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPut">
+    <label class="col-md-2 control-label">是否需要认证</label>
+    <div class="col-md-6">
+      <label class="checkbox-inline" for="put_is_need_check">
+        <input type="checkbox" id="put_is_need_check" ng-model="putIsNeedCheck">需要认证
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="putIsNeedCheck && isPut">
+    <label class="col-md-2 control-label">认证方式</label>
+    <div class="col-md-6">
+      <label class="checkbox-inline" for="put_is_check_app">
+        <input type="checkbox" id="put_is_check_app" ng-model="putIsCheckApp">Key/Secret认证
+      </label>
+      <label class="checkbox-inline" for="put_is_check_session">
+        <input type="checkbox" id="put_is_check_session" ng-model="putIsCheckSession">Session认证
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="putIsNeedCheck && putIsCheckSession && isPut">
+    <label for="put_session_param_map" class="col-md-2 control-label">Session与参数对应关系</label>
+    <div class="col-md-6">
+      <input  name="put_session_param_map" type="text" class="form-control" id="put_session_param_map" ng-model="put_session_param_map" ng-required='putIsNeedCheck && putIsCheckSession && isPut' ng-pattern='/^{}$|^{"[a-z A-z]+":"s_uid"}$|^{"[a-z A-z]+":"s_puid"}$|^{"[a-z A-z]+":"s_bind"}$/'>
+    </div>
+    <span for="put_session_param_map" class="col-md-2 control-label">示例: {"uid":"s_uid"}</span>
+  </div>
+  <div class="form-group" ng-show="isPut">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="isPut && addForm.put_session_param_map.$error.required">必填!</span>
+      <span class="error" ng-show="isPut && addForm.put_session_param_map.$error.pattern">不是合法的表达式</span>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPut">
+    <label for="put_input_doc" class="col-md-2 control-label">请求参数说明(Markdown)</label>
+    <div class="col-md-6">
+      <textarea name="put_input_doc" class="form-control" rows="6" id="put_input_doc" ng-model="putInputDoc" ng-maxlength="1024" placeholder="对HTTP请求参数做详细说明" ng-required="isPut"></textarea>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPut">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="addForm.put_input_doc.$error.maxlength">最大长度为1024</span>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPut">
+    <label for="put_output_doc" class="col-md-2 control-label">响应内容说明(Markdown)</label>
+    <div class="col-md-6">
+      <textarea name="put_output_doc" class="form-control" rows="6" id="put_output_doc" ng-model="putOutputDoc" ng-maxlength="1024" placeholder="对HTTP响应结果做详细说明" ng-required="isPut"></textarea>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPut">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="addForm.put_output_doc.$error.maxlength">最大长度为1024</span>
+    </div>
+  </div>
+  <!-- DELETE -->
+  <div class="form-group" ng-show="isDelete">
+    <label for="input_doc" class="col-md-2 control-label">DELETE方法</label>
+  </div>
+  <div class="form-group" ng-show="isDelete">
+    <label class="col-md-2 control-label">是否签名</label>
+    <div class="col-md-6">
+      <label class="radio-inline" >
+        <input type="radio" ng-model="deleteIsToken" value="1">是
+      </label>
+      <label class="radio-inline">
+        <input type="radio" ng-model="deleteIsToken" value="0">否
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isDelete">
+    <label class="col-md-2 control-label">网络访问权限</label>
+    <div class="col-md-6">
+      <label class="radio-inline">
+        <input type="radio" ng-model="deleteIsPrivate" value="1">可信网络(包含内网)
+      </label>
+      <label class="radio-inline">
+        <input type="radio" ng-model="deleteIsPrivate" value="0">公网
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isDelete">
+    <label class="col-md-2 control-label">是否需要认证</label>
+    <div class="col-md-6">
+      <label class="checkbox-inline" for="delete_is_need_check">
+        <input type="checkbox" id="delete_is_need_check" ng-model="deleteIsNeedCheck">需要认证
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="deleteIsNeedCheck && isDelete">
+    <label class="col-md-2 control-label">认证方式</label>
+    <div class="col-md-6">
+      <label class="checkbox-inline" for="delete_is_check_app">
+        <input type="checkbox" id="delete_is_check_app" ng-model="deleteIsCheckApp">Key/Secret认证
+      </label>
+      <label class="checkbox-inline" for="delete_is_check_session">
+        <input type="checkbox" id="delete_is_check_session" ng-model="deleteIsCheckSession">Session认证
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="deleteIsNeedCheck && deleteIsCheckSession && isDelete">
+    <label for="delete_session_param_map" class="col-md-2 control-label">Session与参数对应关系</label>
+    <div class="col-md-6">
+      <input  name="delete_session_param_map" type="text" class="form-control" id="delete_session_param_map" ng-model="delete_session_param_map" ng-required="deleteIsNeedCheck && deleteIsCheckSession && isDelete" ng-pattern='/^{}$|^{"[a-z A-z]+":"s_uid"}$|^{"[a-z A-z]+":"s_puid"}$|^{"[a-z A-z]+":"s_bind"}$/'>
+    </div>
+    <span for="delete_session_param_map" class="col-md-2 control-label">示例: {"uid":"s_uid"}</span>
+  </div>
+  <div class="form-group" ng-show="isDelete">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="isDelete && addForm.delete_session_param_map.$error.required">必填!</span>
+      <span class="error" ng-show="isDelete && addForm.delete_session_param_map.$error.pattern">不是合法的表达式</span>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isDelete">
+    <label for="delete_input_doc" class="col-md-2 control-label">请求参数说明(Markdown)</label>
+    <div class="col-md-6">
+      <textarea name="delete_input_doc" class="form-control" rows="6" id="delete_input_doc" ng-model="deleteInputDoc" ng-maxlength="1024" placeholder="对HTTP请求参数做详细说明" ng-required="isDelete"></textarea>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isDelete">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="addForm.delete_input_doc.$error.maxlength">最大长度为1024</span>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isDelete">
+    <label for="delete_output_doc" class="col-md-2 control-label">响应内容说明(Markdown)</label>
+    <div class="col-md-6">
+      <textarea name="delete_output_doc" class="form-control" rows="6" id="delete_output_doc" ng-model="deleteOutputDoc" ng-maxlength="1024" placeholder="对HTTP响应结果做详细说明" ng-required="isDelete"></textarea>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isDelete">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="addForm.delete_output_doc.$error.maxlength">最大长度为1024</span>
+    </div>
+  </div>
+  <!-- PATCH -->
+  <div class="form-group" ng-show="isPatch">
+    <label for="input_doc" class="col-md-2 control-label">PATCH方法</label>
+  </div>
+  <div class="form-group" ng-show="isPatch">
+    <label class="col-md-2 control-label">是否签名</label>
+    <div class="col-md-6">
+      <label class="radio-inline" >
+        <input type="radio" ng-model="patchIsToken" value="1">是
+      </label>
+      <label class="radio-inline">
+        <input type="radio" ng-model="patchIsToken" value="0">否
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPatch">
+    <label class="col-md-2 control-label">网络访问权限</label>
+    <div class="col-md-6">
+      <label class="radio-inline">
+        <input type="radio" ng-model="patchIsPrivate" value="1">可信网络(包含内网)
+      </label>
+      <label class="radio-inline">
+        <input type="radio" ng-model="patchIsPrivate" value="0">公网
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPatch">
+    <label class="col-md-2 control-label">是否需要认证</label>
+    <div class="col-md-6">
+      <label class="checkbox-inline" for="patch_is_need_check">
+        <input type="checkbox" id="patch_is_need_check" ng-model="patchIsNeedCheck">需要认证
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="patchIsNeedCheck && isPatch">
+    <label class="col-md-2 control-label">认证方式</label>
+    <div class="col-md-6">
+      <label class="checkbox-inline" for="patch_is_check_app">
+        <input type="checkbox" id="patch_is_check_app" ng-model="patchIsCheckApp">Key/Secret认证
+      </label>
+      <label class="checkbox-inline" for="patch_is_check_session">
+        <input type="checkbox" id="patch_is_check_session" ng-model="patchIsCheckSession">Session认证
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="patchIsNeedCheck && patchIsCheckSession && isPatch">
+    <label for="patch_session_param_map" class="col-md-2 control-label">Session与参数对应关系</label>
+    <div class="col-md-6">
+      <input  name="patch_session_param_map" type="text" class="form-control" id="patch_session_param_map" ng-model="patch_session_param_map" ng-required="patchIsNeedCheck && patchIsCheckSession && isPatch" ng-pattern='/^{}$|^{"[a-z A-z]+":"s_uid"}$|^{"[a-z A-z]+":"s_puid"}$|^{"[a-z A-z]+":"s_bind"}$/'>
+    </div>
+    <span for="patch_session_param_map" class="col-md-2 control-label">示例: {"uid":"s_uid"}</span>
+  </div>
+  <div class="form-group" ng-show="isPatch">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="isPatch && addForm.patch_session_param_map.$error.required">必填!</span>
+      <span class="error" ng-show="isPatch && addForm.patch_session_param_map.$error.pattern">不是合法的表达式</span>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPatch">
+    <label for="patch_input_doc" class="col-md-2 control-label">请求参数说明(Markdown)</label>
+    <div class="col-md-6">
+      <textarea name="patch_input_doc" class="form-control" rows="6" id="patch_input_doc" ng-model="patchInputDoc" ng-maxlength="1024" placeholder="对HTTP请求参数做详细说明" ng-required="isPatch"></textarea>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPatch">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="addForm.patch_input_doc.$error.maxlength">最大长度为1024</span>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPatch">
+    <label for="patch_output_doc" class="col-md-2 control-label">响应内容说明(Markdown)</label>
+    <div class="col-md-6">
+      <textarea name="patch_output_doc" class="form-control" rows="6" id="patch_output_doc" ng-model="patchOutputDoc" ng-maxlength="1024" placeholder="对HTTP响应结果做详细说明" ng-required="isPatch"></textarea>
+    </div>
+  </div>
+  <div class="form-group" ng-show="isPatch">
+    <div class="col-md-offset-2 col-md-6">
+      <span class="error" ng-show="addForm.patch_output_doc.$error.maxlength">最大长度为1024</span>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-md-offset-2 col-md-6">
+      <button type="submit" class="btn btn-primary" ng-disabled="(config.switch_product && addForm.productUrl.$error.url) || (config.switch_pre && addForm.preUrl.$error.url) || (config.switch_test && addForm.testUrl.$error.url) || (config.switch_sandbox && addForm.sandboxUrl.$error.url) || (isGet && addForm.get_session_param_map.$error.pattern) || (isPost && addForm.post_session_param_map.$error.pattern) || (isPut && addForm.put_session_param_map.$error.pattern) || (isDelete && addForm.delete_session_param_map.$error.pattern || addForm.token.$error.pattern || addForm.token.$error.maxlength || addForm.depend.$error.maxlength || addForm.cookies.$error.maxlength|| addForm.cookies.$error.pattern)">添加</button>
+      <button type="button" class="btn btn-default" ng-click="back()">返回</button>
+    </div>
+  </div>
+</form>
+</div>

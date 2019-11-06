@@ -18,3 +18,7 @@ func NewHTTPFileSystem() http.FileSystem {
 		Prefix:    "static",
 	}
 }
+
+func NewHTTPFileSystemDev() http.FileSystem {
+	return http.Dir("static")
+}

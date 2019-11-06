@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/ah-panda/panda/pkg/api/routers"
+	"github.com/ah-panda/panda/pkg/config/setting"
 	"github.com/ah-panda/panda/pkg/logging"
 	"github.com/ah-panda/panda/pkg/models"
 	"github.com/spf13/cobra"
@@ -31,13 +32,13 @@ func server(cmd *cobra.Command, args []string) error {
 
 	printConfg()
 
-	err = models.InitDb("mysql", dbCfg.DataSource())
+	err = models.InitDb("mysql", setting.DbCfg.DataSource())
 	if err != nil {
 		logging.Fatal("init db err:", err)
 	}
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", httpServerCfg.Port),
+		Addr:    fmt.Sprintf(":%d", setting.HttpServerCfg.Port),
 		Handler: routers.NewGin(),
 	}
 
@@ -58,7 +59,7 @@ func server(cmd *cobra.Command, args []string) error {
 	<-quit
 	logging.Infof("Shutdown Server ...")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
 		logging.Fatal("Server Shutdown:", err)

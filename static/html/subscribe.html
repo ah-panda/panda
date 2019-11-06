@@ -1,0 +1,21 @@
+
+<form name="subscribeForm" class="form-horizontal" role="form" ng-submit="submit()">
+  <div class="form-group">
+    <label for="topic" class="col-md-2 control-label">消息名称</label>
+    <div class="col-md-6">
+      <input name="topic" type="text" class="form-control" id="topic" placeholder="TOPIC">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="callback" class="col-md-2 control-label">回调接口</label>
+    <div class="col-md-6">
+      <input name="callback" type="text" class="form-control" id="callback" placeholder="http://apis.mumway.com/subscribe/TOPIC">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-md-offset-2 col-md-6">
+      <button type="button" class="btn btn-primary" ng-click="">订阅</button>
+      <button type="button" class="btn btn-danger" ng-click="">清空</button>
+    </div>
+  </div>
+</form>

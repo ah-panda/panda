@@ -1,0 +1,88 @@
+
+<form name="queryForm" class="form-horizontal" role="form" ng-submit="submit()">
+  <div class="form-group">
+    <label for="request_date" class="col-md-2 control-label">日期</label>
+    <div class="col-md-6">
+      <input type="text" class="form-control" placeholder="2015-07-29" id="request_date" ng-model="request_date" required></input>
+    </div>
+  </div>
+  <!--div class="form-group">
+    <label for="request_start_time" class="col-md-2 control-label">开始时间</label>
+    <div class="col-md-6">
+      <input type="text" class="form-control" placeholder="08:35:00" id="request_start_time" ng-model="request_start_time" required></input>
+    </div>
+  </div-->
+  <!--div class="form-group">
+    <label for="request_end_time" class="col-md-2 control-label">结束时间</label>
+    <div class="col-md-6">
+      <input type="text" class="form-control" placeholder="12:20:00" id="request_end_time" ng-model="request_end_time"></input>
+    </div>
+  </div-->
+  <div class="form-group">
+    <label for="request_keywords" class="col-md-2 control-label">关键字</label>
+    <div class="col-md-6">
+      <input type="text" class="form-control" id="request_keywords" ng-model="request_keywords" required></input>
+    </div>
+  </div>
+  <!--div class="form-group">
+    <label for="response_status_code" class="col-md-2 control-label">响应状态码</label>
+    <div class="col-md-6">
+      <input type="text" placeholder="500" class="form-control" id="response_status_code" ng-model="response_status_code"></input>
+    </div>
+  </div-->
+  <div class="form-group">
+    <div class="col-md-offset-2 col-md-6">
+      <button type="button" class="btn btn-primary" ng-click="query()" ng-disabled="is_disabled">查询生产环境</button>
+      <button type="button" class="btn btn-danger" ng-click="reset()">清空</button>
+    </div>
+  </div>
+</form>
+<hr>
+<div class="col-md-12 text-center">
+    <!--h6>命中条数：{{log_contents.hits.total}}</h6-->
+    <nav>
+        <ul class="pagination">
+            <li>
+                <a aria-label="Previous" ng-click="prev_page()">
+                <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li ng-repeat="page in pages" class="{{active(page)}}">
+              <a ng-click="query_page(page)">{{page}}</a>
+            </li>
+            <li>
+                <a aria-label="Next" ng-click="next_page()">
+                <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+<div class="col-md-12">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th class="text-center">Gateway节点</th>
+        <th class="text-center">请求时间</th>
+        <th class="text-center">请求方法</th>
+        <th class="text-center">请求地址</th>
+        <th class="text-center">客户端IP</th>
+        <th class="text-center">响应状态码</th>
+        <th class="text-center">响应大小</th>
+        <th class="text-center">响应时间</th>
+        </tr>
+    </thead>
+    <tbody class="table-word-break">
+      <tr ng-repeat="hit in log_contents.hits.hits">
+        <td class="text-center">{{hit._source["@host"]}}</td>
+        <td class="text-center">{{hit._source["ngx_time"]}}</td>
+        <td class="text-center">{{hit._source["method"]}}</td>
+        <td class="text-center">{{hit._source["request"]}}</td>
+        <td class="text-center">{{hit._source["real_ip"]}}</td>
+        <td class="text-center">{{hit._source["status_code"]}}</td>
+        <td class="text-center">{{hit._source["body_size"]}}</td>
+        <td class="text-center">{{hit._source["inner_request_time"]}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
