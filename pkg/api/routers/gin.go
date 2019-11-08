@@ -43,13 +43,8 @@ func NewGin() *gin.Engine {
 	authorized.Use()
 	{
 		authorized.Any("/logout", logout)
-		authorized.GET("/user", func(c *gin.Context) {
-
-		})
-
-		authorized.GET("/admin", func(c *gin.Context) {
-
-		})
+		authorized.GET("/user", getUser)
+		authorized.GET("/admin", getAdmin)
 	}
 
 	return r

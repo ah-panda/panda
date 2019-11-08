@@ -6,14 +6,14 @@ import (
 )
 
 type User struct {
-	Deleted       int       `xorm:"not null default 0 TINYINT(8)"`
-	DeveloperId   string    `xorm:"CHAR(20)"`
-	LastLoginTime time.Time `xorm:"DATETIME"`
-	Rtx           string    `xorm:"unique CHAR(32)"`
-	UserId        int       `xorm:"not null pk autoincr INT(20)"`
+	Deleted       int       `xorm:"not null default 0 TINYINT(8)" json:"-"`
+	DeveloperId   string    `xorm:"CHAR(20)" json:"developer_id"`
+	LastLoginTime time.Time `xorm:"DATETIME" json:"-"`
+	Rtx           string    `xorm:"unique CHAR(32)" json:"rtx"`
+	UserId        int       `xorm:"not null pk autoincr INT(20)" json:"user_id"`
 
-	Developer     *Developer     `xorm:"-"`
-	UserBasicInfo *UserBasicInfo `xorm:"-"`
+	Developer     *Developer     `xorm:"-" json:"-"`
+	UserBasicInfo *UserBasicInfo `xorm:"-" json:"-"`
 }
 
 func (u *User) LoadDeveloper() error {
@@ -97,11 +97,21 @@ func getUserByRtx(e Engine, rtx string) (*User, error) {
 }
 
 type ListUsersOption struct {
-	DeveloperId *int
+	developerId *string
+	rtx         *string
 }
 
-func (opt ListUsersOption) WithDeveloperId(developerId int) ListUsersOption {
-	opt.DeveloperId = &developerId
+func (opt ListUsersOption) WithDeveloperId(developerId string) ListUsersOption {
+	opt.developerId = &developerId
+	return opt
+}
+
+func (opt ListUsersOption) WithRtx(rtx string) ListUsersOption {
+	if rtx != "" {
+		rtx = rtx + "%"
+		opt.rtx = &rtx
+	}
+
 	return opt
 }
 
@@ -112,8 +122,12 @@ func ListUsers(opt ListUsersOption) ([]*User, error) {
 func listUsers(e Engine, opt ListUsersOption) ([]*User, error) {
 	var ds []*User
 
-	if opt.DeveloperId != nil {
-		e.Where("developer_id = ?", *opt.DeveloperId)
+	if opt.developerId != nil {
+		e.Where("developer_id = ?", *opt.developerId)
+	}
+
+	if opt.rtx != nil {
+		e.Where("rtx like ?", *opt.rtx)
 	}
 
 	err := e.Asc("developer_id").Find(&ds)

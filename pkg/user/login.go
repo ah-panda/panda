@@ -8,7 +8,7 @@ import (
 	"github.com/ah-panda/panda/pkg/models"
 )
 
-func Login(username, password, ip string) (*context.APIContext, error) {
+func Login(username, password string) (*context.APIContext, error) {
 	ubi, err := models.GetUserBasicInfoByUsername(username)
 	if err != nil {
 		return nil, err
@@ -30,8 +30,6 @@ func Login(username, password, ip string) (*context.APIContext, error) {
 		UserID:      ubi.User.UserId,
 		Username:    ubi.Username,
 		DeveloperId: ubi.DeveloperId,
-		Sign:        sign,
-		ClientIP:    ip,
 		Timestamp:   time.Now().Unix(),
 	}
 
